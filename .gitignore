@@ -74,6 +74,9 @@ web_modules/
 .env.test
 .env.production
 
+# Ignore temp folder and its contents
+public/temp/
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
