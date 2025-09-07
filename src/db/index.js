@@ -5,7 +5,7 @@ import {DB_NAME} from "../constants.js";
 const connectDB=async () =>{
     try{
         //since mongoose.connect returns a promise we will await it and returns an object
-    const connectionInstance=await mongoose.connect(process.env.MONGODB_URI);
+    const connectionInstance=await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
         console.log(`\nMONGODB connected !! DB HOST: ${connectionInstance.connection.host}`)
         //connectionInstance.connection.host gives the host of the database connected
     }
@@ -13,7 +13,7 @@ const connectDB=async () =>{
         console.log("MONGODB connection FAILED:", error)
         process.exit(1);
         //instead of throwing error we are exiting the process to exit the process with failure
-        
+
     }
 }
 export default connectDB;
