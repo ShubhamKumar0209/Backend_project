@@ -7,3 +7,4 @@ class APIResponse{
         this.success=statusCode<400;//since greater than 400 is error and sent by APIError class
     }
 }
+export default APIResponse;
