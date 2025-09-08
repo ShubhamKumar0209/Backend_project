@@ -48,6 +48,7 @@ const registerUser=asyncHandler(async (req,res)=>{
     const normalizedPath = avatarLocalPath.replace(/\\/g, "/");
     const avatar = await uploadOnCloudinary(normalizedPath);
     const coverImage=await uploadOnCloudinary(coverImageLocalPath)
+    console.log("avatar",avatar);   
 
     if(!avatar) throw new APIError(500,"Failed to upload avatar image, please try again later") ;
     // console.log("avatar upload result:", avatar);
