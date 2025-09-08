@@ -17,4 +17,10 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser());
 //cookieParser middleware should be used after express session if we are using express session 
+
+import userRouter from "./routes/user.routes.js";
+
+//good practice to prefix api versioning
+app.use("/api/v1/users",userRouter)
+
 export default app;
