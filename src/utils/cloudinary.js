@@ -3,7 +3,7 @@ import fs from "fs";
 cloudinary.config({ 
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
   api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_SECRET_KEY
 });
 
 const uploadOnCloudinary= async(localFilePath)=>{
@@ -14,10 +14,13 @@ const uploadOnCloudinary= async(localFilePath)=>{
             resource_type:"auto"
         })
         //file has been uploaded successfully
-        console.log("File has been successfully uploaded on cloudinary ",response.url);
+        
+        // console.log("File has been successfully uploaded on cloudinary ",response.url);
+        fs.unlinkSync(localFilePath)
         return response
     }
     catch(error){
+        console.error("Cloudinary upload error:", error);
         fs.unlinkSync(localFilePath)
         //remove the locally saved file as the upload got failed and sync as we want to delete it before moving forward
         return null

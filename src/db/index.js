@@ -5,7 +5,7 @@ import {DB_NAME} from "../constants.js";
 const connectDB=async () =>{
     try{
         //since mongoose.connect returns a promise we will await it and returns an object
-    const connectionInstance=await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+    const connectionInstance=await mongoose.connect(process.env.MONGODB_URI);
         console.log(`\nMONGODB connected !! DB HOST: ${connectionInstance.connection.host}`)
         //connectionInstance.connection.host gives the host of the database connected
     }

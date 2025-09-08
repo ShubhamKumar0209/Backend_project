@@ -30,14 +30,27 @@ const registerUser=asyncHandler(async (req,res)=>{
     })
 
     if(existingUser) throw new APIError(409,"User already exists with this username or email");
+
+    //this req.file is coming from multer middleware
+    //since we are uploading multiple files, so req.files
+    console.log(req.files);
     const avatarLocalPath=req.files?.avatar[0]?.path;
-    const coverImageLocalPath=req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath=req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length>0  )
+    {
+        coverImageLocalPath=req.files.coverImage[0].path;
+    }
     if(!avatarLocalPath) throw new APIError(400,"Avatar file is required")
 
-    const avatar=await uploadOnCloudinary(avatarLocalPath)
+    // console.log("avatarLocalPath:", avatarLocalPath);
+    const normalizedPath = avatarLocalPath.replace(/\\/g, "/");
+    const avatar = await uploadOnCloudinary(normalizedPath);
     const coverImage=await uploadOnCloudinary(coverImageLocalPath)
 
     if(!avatar) throw new APIError(500,"Failed to upload avatar image, please try again later") ;
+    // console.log("avatar upload result:", avatar);
     //cover image is optional
 
     const user =await User.create(
@@ -47,7 +60,7 @@ const registerUser=asyncHandler(async (req,res)=>{
             coverImage:coverImage?.url||"",
             email,
             password,
-            username:username.tolowercase()
+            username:username.toLowerCase()
         }
     )
 
