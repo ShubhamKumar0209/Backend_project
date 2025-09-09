@@ -4,8 +4,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import APIResponse from "../utils/APIResponse.js";
 
-const generateAccessAndRefreshTokens = aysnc(userId)
-{
+const generateAccessAndRefreshTokens = async (userId) => {
     try {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
@@ -13,7 +12,6 @@ const generateAccessAndRefreshTokens = aysnc(userId)
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
-        //not need to validate other fields while saving refresh token
         return { accessToken, refreshToken };
     }
     catch (error) {
@@ -22,7 +20,9 @@ const generateAccessAndRefreshTokens = aysnc(userId)
 }
 
 
+
 const registerUser = asyncHandler(async (req, res) => {
+    
     //get user details from frontend
     //validation-not empty
     //check if user already exists:through username or email
@@ -108,7 +108,6 @@ const loginUser = asyncHandler(async (req, res) => {
         $or: [{ username, email }]
     })
     if (!user) throw new APIError(404, "User not found");
-    if (!password || password.trim() === "") throw new APIError(400, "Password is required to login");
 
     const isPasswordValid = await user.isPasswordCorrect(password);
     if (!isPasswordValid) throw new APIError(401, "Invalid Password");
