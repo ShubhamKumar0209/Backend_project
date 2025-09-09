@@ -15,4 +15,9 @@ userRouter.route("/register").post(upload.fields([
         maxCount:1
     }
 ]),registerUser)
+
+userRouter.route("/login").post(loginUser)
+//secured routes
+userRouter.route("/logout").post(verifyJWT,logoutUser)
+
 export default userRouter;

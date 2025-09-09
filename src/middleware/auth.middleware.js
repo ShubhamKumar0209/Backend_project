@@ -1,0 +1,27 @@
+import asychHandler from "./asyncHandler.middleware.js";
+import APIError from "../utils/APIError.js";
+import APIError from "../utils/APIError.js";
+import jwt from "jsonwebtoken";
+import { User } from "../models/User.models.js";
+
+export const verifyJWT=asychHandler(async(req,_,next)=>{
+    //"_" is for res but we are not giving any res in return so _
+    // req has cookies access because of cookie parser
+    try {
+        const token=req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","");
+        if(!token) throw new APIError(401,"Unauthorized access");
+    
+        const decodedToken= await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+    
+        const user=await User.findById(decodedToken?._id).select("-password -refreshToken");
+    
+        if(!user) throw new APIError(401,"Invalid access token")
+    } catch (error) {
+        throw new APIError(401,error?.message||"Invalid access token")
+    }
+    //we used accesstoken to get id from it, now we used that id to find the user details from our db so that we can pass this to logoutUser to delete refreshTokens
+
+    req.user=user;
+    next()
+
+});
