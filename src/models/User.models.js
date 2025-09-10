@@ -62,6 +62,8 @@ userSchema.methods.isPasswordCorrect=async function(password){
     return await bcrypt.compare(password,this.password);
     //await, since cryptography takes time, compute intensive
 }
+
+//Access token is short lived (1d,2d etc.)
 userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
@@ -77,6 +79,7 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 
+//Refresh token is saved in db so that when access token expires, it can be renewed using this refresh token
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {
