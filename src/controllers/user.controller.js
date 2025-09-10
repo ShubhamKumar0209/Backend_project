@@ -101,7 +101,7 @@ const loginUser = asyncHandler(async (req, res) => {
     //access and refresh token
     //send cookies
     const { email, username, password } = req.body;
-    if (!username || !email) throw new APIError(400, "Username or email is required to login");
+    if (!username && !email) throw new APIError(400, "Username or email is required to login");
     //find user based on username or email
     //these findOne or find methods are mongoDB methods and can be  accessed through User not user.  
     const user = await User.findOne({
@@ -162,7 +162,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 
 })
-export default {
+export {
     loginUser,
     registerUser,
     logoutUser

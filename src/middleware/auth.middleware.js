@@ -1,10 +1,9 @@
-import asychHandler from "./asyncHandler.middleware.js";
-import APIError from "../utils/APIError.js";
+import asyncHandler from "../utils/asyncHandler.js";
 import APIError from "../utils/APIError.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.models.js";
 
-export const verifyJWT=asychHandler(async(req,_,next)=>{
+export const verifyJWT=asyncHandler(async(req,_,next)=>{
     //"_" is for res but we are not giving any res in return so _
     // req has cookies access because of cookie parser
     try {
