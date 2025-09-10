@@ -45,7 +45,7 @@ const userSchema=new mongoose.Schema({
         type:String,
         required:[true,"Password is required"]
     },
-    refreshTokens:{
+    refreshToken:{
         type:String,
     }
 },{timestamps:true});//to automatically add createdAt and updatedAt fields
@@ -62,32 +62,31 @@ userSchema.methods.isPasswordCorrect=async function(password){
     return await bcrypt.compare(password,this.password);
     //await, since cryptography takes time, compute intensive
 }
-userSchema.methods.generateAccessToken= async function(){
+userSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
-            //payload=datas to be sent
-            _id:this._id,
-            email:this.email,
-            username:this.username,
-            fullname:this.fullname
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullname: this.fullname
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
-    )
-}
+    );
+};
 
-userSchema.methods.generateRefreshToken= async function(){
+userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {
-            //payload=datas to be sent
-            _id:this._id,
+            _id: this._id,
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn:process.env.REFREgSH_TOKEN_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
-    )
-}
+    );
+};
+
 export const User=mongoose.model("User",userSchema);

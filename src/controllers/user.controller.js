@@ -22,7 +22,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 
 const registerUser = asyncHandler(async (req, res) => {
-    
+
     //get user details from frontend
     //validation-not empty
     //check if user already exists:through username or email
@@ -104,9 +104,11 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!username && !email) throw new APIError(400, "Username or email is required to login");
     //find user based on username or email
     //these findOne or find methods are mongoDB methods and can be  accessed through User not user.  
-    const user = await User.findOne({
-        $or: [{ username, email }]
-    })
+    const user = await User.findOne(
+        username
+            ? { username }
+            : { email }
+    );
     if (!user) throw new APIError(404, "User not found");
 
     const isPasswordValid = await user.isPasswordCorrect(password);
@@ -119,8 +121,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+    };
+
 
     return res
         .status(200)
@@ -151,14 +155,16 @@ const logoutUser = asyncHandler(async (req, res) => {
     // we need options to clear cookies
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+    };
+
     //cookies name should be same 
     return res
-    .status(200)
-    .clearCookie("accessToken",options)
-    .clearCookie("refreshToken",options)
-    .json(new APIResponse(200,{},"User logged Out"))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new APIResponse(200, {}, "User logged Out"))
 
 
 })
