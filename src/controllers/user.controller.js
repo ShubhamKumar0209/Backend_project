@@ -1,7 +1,7 @@
 import { User } from "../models/User.models.js";
 import APIError from "../utils/APIError.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import uploadOnCloudinary from "../utils/cloudinary.js";
+import {uploadOnCloudinary,deleteFromCloudinary} from "../utils/cloudinary.js";
 import APIResponse from "../utils/APIResponse.js";
 import jwt from "jsonwebtoken";
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -247,8 +247,14 @@ const updateUserAvatar=asyncHandler(async(req,res)=>{
     if(!avatarLocalPath) throw new APIError(400,"Avatar file is missing");
     const avatar=await uploadOnCloudinary(avatarLocalPath);
     if(!avatar.url) throw new APIError(400,"Error while uploading on avatar");
+    
+    const user=await User.findByIdAndUpdate(req.user?._id,{$set:{avatar:avatar.url}}).select("-password");
+    // we removed new:true, so that we can get the old url to delete
+    const oldAvatarUrl=user.avatar;
+    if(oldAvatarUrl) await deleteFromCloudinary(oldAvatarUrl);
+    //Now we will update the new AvatarUrl manually though the value in database has been updated the only thing is 'user' variable will contain old value so we need to update it manually before responding;
+    user.avatar=avatar.url;
 
-    const user=await User.findByIdAndUpdate(req.user?._id,{new:true},{$set:{avatar:avatar.url}}).select("-password");
 
     return res
     .status(200)

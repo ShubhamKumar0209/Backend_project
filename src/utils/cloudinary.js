@@ -1,5 +1,6 @@
 import {v2 as cloudinary} from "cloudinary";
 import fs from "fs";
+import APIError from "./APIError.js";
 cloudinary.config({ 
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
   api_key: process.env.CLOUDINARY_API_KEY, 
@@ -30,4 +31,23 @@ const uploadOnCloudinary= async(localFilePath)=>{
 
 }
 
-export default uploadOnCloudinary;
+
+const deleteFromCloudinary=async(oldImageUrl)=>{
+    try{
+        if(!oldImageUrl) throw new APIError(500,"Could not fetch oldImageUrl");
+        const publicIdMatch = oldImageUrl.match(/\/v\d+\/(.+)\.\w+$/);
+        if(!publicIdMatch|| !publicIdMatch[1]) throw new APIError(500,"Could not extract public ID from URL:", oldImageUrl);
+         const publicId = publicIdMatch[1];
+        const result=await cloudinary.uploader.destroy(publicId);
+        return result;
+    }
+    catch(err)
+    {
+        console.error("Cloudinary destroy error: ",err);
+        return null;
+    }
+}
+
+export  {
+    uploadOnCloudinary,deleteFromCloudinary
+}
